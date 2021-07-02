@@ -13,6 +13,19 @@ var $_GET = (function(){
         return {};
     }
 })();
+layui.use('form', function(){
+	var form = layui.form;
+	form.on('select', function(data){
+		$("#cid").change();
+	});
+});
+layui.use('element', function(){
+	var element = layui.element;
+});
+function activeselect(a){
+	$('.active').removeClass('active');
+	$(a).addClass('active')
+}
 function getcount() {
 	$.ajax({
 		type : "GET",
@@ -87,12 +100,9 @@ function scollgift(){
   }, 2000);
 }
 function getPoint() {
-	if($('#tid option:selected').val()==undefined || $('#tid option:selected').val()=="0"){
+	if($('#tid option:selected').val()=="0"){
 		$('#inputsname').html("");
 		$('#need').val('');
-		$('#display_price').hide();
-		$('#display_num').hide();
-		$('#display_left').hide();
 		$('#alert_frame').hide();
 		return false;
 	}
@@ -102,7 +112,6 @@ function getPoint() {
 	var price = $('#tid option:selected').attr('price');
 	var shopimg = $('#tid option:selected').attr('shopimg');
 	var close = $('#tid option:selected').attr('close');
-	$('#display_price').show();
 	if(multi==1 && count>1){
 		$('#need').val('￥'+price +"元 ➠ "+count+"个");
 	}else{
@@ -124,13 +133,6 @@ function getPoint() {
 	}else{
 		$('#display_num').hide();
 	}
-	var desc = $('#tid option:selected').attr('desc');
-	if(desc!='' && alert!='null'){
-		$('#alert_frame').show();
-		$('#alert_frame').html(unescape(desc));
-	}else{
-		$('#alert_frame').hide();
-	}
 	var inputnametype = '';
 	$('#inputsname').html("");
 	var inputname = $('#tid option:selected').attr('inputname');
@@ -142,7 +144,7 @@ function getPoint() {
 			inputnametype = inputname.split('[')[1].split(']')[0];
 			inputname = inputname.split('[')[0];
 		}
-		$('#inputsname').append('<div class="form-group"><div class="input-group"><div class="input-group-addon" id="inputname">'+inputname+'</div><input type="text" name="inputvalue" id="inputvalue" value="'+($_GET['qq']?$_GET['qq']:'')+'" class="form-control" required onblur="checkInput()"/></div></div>');
+		$('#inputsname').append('<div class="layui-form layui-form-pane"><div class="layui-form-item"><label class="layui-form-label" id="inputname">'+inputname+'</label><div class="layui-input-block"><input type="text" name="inputvalue" id="inputvalue" value="'+($_GET['qq']?$_GET['qq']:'')+'" class="layui-input layui-form-danger" required onblur="checkInput()"/></div></div></div>');
 	}
 	var inputsname = $('#tid option:selected').attr('inputsname');
 	if(inputsname!=''){
@@ -165,19 +167,19 @@ function getPoint() {
 					}
 					addstr += '<option value="'+i+'">'+v+'</option>';
 				});
-				$('#inputsname').append('<div class="form-group"><div class="input-group"><div class="input-group-addon" id="inputname'+(i+2)+'">'+selectname+'</div><select name="inputvalue'+(i+2)+'" id="inputvalue'+(i+2)+'" class="form-control">'+addstr+'</select></div></div>');
+				$('#inputsname').append('<div class="layui-form-pane"><div class="layui-form-item"><label class="layui-form-label" id="inputname'+(i+2)+'">'+selectname+'</label><div class="layui-input-block"><select name="inputvalue'+(i+2)+'" id="inputvalue'+(i+2)+'" lay-verify="required" class="form-control">'+addstr+'</select></div></div></div>');
 			}else{
 			if(value=='说说ID'||value=='说说ＩＤ'||inputsnametype=='ssid')
-				var addstr='<div class="input-group-addon onclick" onclick="get_shuoshuo(\'inputvalue'+(i+2)+'\',$(\'#inputvalue\').val())">自动获取</div>';
+				var addstr='<div class="layui-btn layui-btn-danger onclick" onclick="get_shuoshuo(\'inputvalue'+(i+2)+'\',$(\'#inputvalue\').val())">自动获取说说ＩＤ</div>';
 			else if(value=='日志ID'||value=='日志ＩＤ'||inputsnametype=='rzid')
-				var addstr='<div class="input-group-addon onclick" onclick="get_rizhi(\'inputvalue'+(i+2)+'\',$(\'#inputvalue\').val())">自动获取</div>';
+				var addstr='<div class="layui-btn layui-btn-warm onclick" onclick="get_rizhi(\'inputvalue'+(i+2)+'\',$(\'#inputvalue\').val())">自动获取日志ＩＤ</div>';
 			else if(value=='作品ID'||value=='作品ＩＤ'||inputsnametype=='zpid')
-				var addstr='<div class="input-group-addon onclick" onclick="getshareid2(\'inputvalue'+(i+2)+'\',$(\'#inputvalue\').val())">自动获取</div>';
+				var addstr='<div class="layui-btn layui-btn-warm onclick" onclick="getshareid2(\'inputvalue'+(i+2)+'\',$(\'#inputvalue\').val())">自动获取作品ＩＤ</div>';
 			else if(value=='收货地址'||value=='收货人地址'||inputsnametype=='address')
-				var addstr='<div class="input-group-addon onclick" onclick="getCity(\'inputvalue'+(i+2)+'\')">点此选择</div>';
+				var addstr='<div class="layui-btn layui-btn-warm onclick" onclick="getCity(\'inputvalue'+(i+2)+'\')">点此选择收货地址</div>';
 			else
 				var addstr='';
-			$('#inputsname').append('<div class="form-group"><div class="input-group"><div class="input-group-addon" id="inputname'+(i+2)+'" gettype="'+inputsnametype+'">'+value+'</div><input type="text" name="inputvalue'+(i+2)+'" id="inputvalue'+(i+2)+'" value="" class="form-control" required/>'+addstr+'</div></div>');
+			$('#inputsname').append('<div class="layui-form layui-form-pane"><div class="layui-form-item"><label class="layui-form-label" id="inputname'+(i+2)+'" gettype="'+inputsnametype+'">'+value+'</label><div class="layui-input-block"><input type="text" name="inputvalue'+(i+2)+'" id="inputvalue'+(i+2)+'" value="" class="layui-input layui-form-danger" required/><div class="layui-form-mid layui-word-aux">'+addstr+'</div></div></div></div>');
 			}
 		});
 	}
@@ -200,6 +202,7 @@ function getPoint() {
 	}
 	var stock = $('#tid option:selected').attr('stock');
 	if($('#tid option:selected').attr('isfaka')==1){
+		$("#iffaka").html('自动发货');
 		$('#inputvalue').attr("placeholder", "用于接收卡密以及查询订单使用");
 		$('#display_left').show();
 		$.ajax({
@@ -218,11 +221,43 @@ function getPoint() {
 	}else{
 		$('#display_left').hide();
 	}
-	var alert = $('#tid option:selected').attr('alert');
+}
+function getshop(tid,cid,name,price,input,inputs,multi,isfaka,value,desc,alert,shopimg,close,prices,max,min,stock){
+	$('#display_selectclass').hide();
+	$('#shoplist').hide(); 
+	$('#shopinfo').show();
+	$("#selected").html('填写商品信息 <select name="tid" id="tid"><option value="'+tid+'" cid="'+cid+'" price="'+price+'" inputname="'+input+'" inputsname="'+inputs+'" multi="'+multi+'" isfaka="'+isfaka+'" count="'+value+'" alert="'+alert+'" shopimg="'+shopimg+'" close="'+close+'" prices="'+prices+'" max="'+max+'" min="'+min+'" stock="'+stock+'">'+name+'</option></select><a class="btn btn-success btn-xs pull-right" href="./?cid='+cid+'">返回重选</a>');
+	$("#infoshop").html('<div class="form-group text-center"><img src="'+shopimg+'" width="120" height="120" style="border-radius: 8px" id="shoptypes" onerror="this.src=\'assets/img/Product/noimg.png\'"><hr class="layui-bg-blue"><b>当前商品：'+generate(name)+(desc!=''?'<hr class="layui-bg-orange">'+unescape(desc):'')+'</b>');
+	$("#imgshop").html('<img src="'+shopimg+'" onerror="this.src=\'assets/img/Product/noimg.png\'">');
+	if(isfaka==1){
+			layer.tips('自动发卡', '#shoptypes', {
+			tips: [1, '#FFB800'],
+			time: 4000
+		});
+	}else{
+				layer.tips('代充商品', '#shoptypes', {
+			tips: [1, '#FFB800'],
+			time: 4000
+		});
+	}
+	$('#tid').hide();
 	if(alert!='' && alert!='null'){
 		var ii=layer.alert(''+unescape(alert)+'',{
 			btn:['我知道了'],
 			title:'商品提示'
+		},function(){
+			layer.close(ii);
+		});
+	}
+	getPoint();
+}
+function showAlert(){
+	var alert = $('#tid option:selected').attr('alert');
+	if(alert!=null && alert!='null'){
+		var ii=layer.alert('<center>'+unescape(alert)+'</center>',{
+			btn:['我知道了'],
+			title:'商品提示',
+			closeBtn:false
 		},function(){
 			layer.close(ii);
 		});
@@ -249,9 +284,17 @@ function get_shuoshuo(id,uin,km,page){
 				var nextpage = page+1;
 				var lastpage = page>1?page-1:1;
 				if($('#show_shuoshuo').length > 0){
-					$('#show_shuoshuo').html('<div class="input-group"><div class="input-group-addon onclick" title="上一页" onclick="get_shuoshuo(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+lastpage+')"><i class="fa fa-chevron-left"></i></div><select id="shuoid" class="form-control" onchange="set_shuoshuo(\''+id+'\');">'+addstr+'</select><div class="input-group-addon onclick" title="下一页" onclick="get_shuoshuo(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+nextpage+')"><i class="fa fa-chevron-right"></i></div></div>');
+					if(km==1){
+						$('#show_shuoshuo').html('<div class="input-group"><div class="input-group-addon onclick" title="上一页" onclick="get_shuoshuo(\''+id+'\',$(\'#km_inputvalue\').val(),'+km+','+lastpage+')"><i class="layui-icon layui-icon-prev"></i></div><select id="shuoid" class="form-control" onchange="set_shuoshuo(\''+id+'\');">'+addstr+'</select><div class="input-group-addon onclick" title="下一页" onclick="get_shuoshuo(\''+id+'\',$(\'#km_inputvalue\').val(),'+km+','+nextpage+')"><i class="layui-icon layui-icon-next"></i></div></div>');
+					}else{
+						$('#show_shuoshuo').html('<div class="input-group"><div class="input-group-addon onclick" title="上一页" onclick="get_shuoshuo(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+lastpage+')"><i class="layui-icon layui-icon-prev"></i></div><select id="shuoid" class="form-control" onchange="set_shuoshuo(\''+id+'\');">'+addstr+'</select><div class="input-group-addon onclick" title="下一页" onclick="get_shuoshuo(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+nextpage+')"><i class="layui-icon layui-icon-next"></i></div></div>');
+					}
 				}else{
-					$('#inputsname').append('<div class="form-group" id="show_shuoshuo"><div class="input-group"><div class="input-group-addon onclick" title="上一页" onclick="get_shuoshuo(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+lastpage+')"><i class="fa fa-chevron-left"></i></div><select id="shuoid" class="form-control" onchange="set_shuoshuo(\''+id+'\');">'+addstr+'</select><div class="input-group-addon onclick" title="下一页" onclick="get_shuoshuo(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+nextpage+')"><i class="fa fa-chevron-right"></i></div></div></div>');
+					if(km==1){
+						$('#km_inputsname').append('<div class="form-group" id="show_shuoshuo"><div class="input-group"><div class="input-group-addon onclick" title="上一页" onclick="get_shuoshuo(\''+id+'\',$(\'#km_inputvalue\').val(),'+km+','+lastpage+')"><i class="layui-icon layui-icon-prev"></i></div><select id="shuoid" class="form-control" onchange="set_shuoshuo(\''+id+'\');">'+addstr+'</select><div class="input-group-addon onclick" title="下一页" onclick="get_shuoshuo(\''+id+'\',$(\'#km_inputvalue\').val(),'+km+','+nextpage+')"><i class="layui-icon layui-icon-next"></i></div></div></div>');
+					}else{
+						$('#inputsname').append('<div class="form-group" id="show_shuoshuo"><div class="input-group"><div class="input-group-addon onclick" title="上一页" onclick="get_shuoshuo(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+lastpage+')"><i class="layui-icon layui-icon-prev"></i></div><select id="shuoid" class="form-control" onchange="set_shuoshuo(\''+id+'\');">'+addstr+'</select><div class="input-group-addon onclick" title="下一页" onclick="get_shuoshuo(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+nextpage+')"><i class="layui-icon layui-icon-next"></i></div></div></div>');
+					}
 				}
 				set_shuoshuo(id);
 			}else{
@@ -285,9 +328,13 @@ function get_rizhi(id,uin,km,page){
 				var nextpage = page+1;
 				var lastpage = page>1?page-1:1;
 				if($('#show_rizhi').length > 0){
-					$('#show_rizhi').html('<div class="input-group"><div class="input-group-addon onclick" onclick="get_rizhi(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+lastpage+')"><i class="fa fa-chevron-left"></i></div><select id="blogid" class="form-control" onchange="set_rizhi(\''+id+'\');">'+addstr+'</select><div class="input-group-addon onclick" onclick="get_rizhi(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+nextpage+')"><i class="fa fa-chevron-right"></i></div></div>');
+					$('#show_rizhi').html('<div class="input-group"><div class="input-group-addon onclick" onclick="get_rizhi(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+lastpage+')"><i class="layui-icon layui-icon-prev"></i></div><select id="blogid" class="form-control" onchange="set_rizhi(\''+id+'\');">'+addstr+'</select><div class="input-group-addon onclick" onclick="get_rizhi(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+nextpage+')"><i class="layui-icon layui-icon-next"></i></div></div>');
 				}else{
-					$('#inputsname').append('<div class="form-group" id="show_rizhi"><div class="input-group"><div class="input-group-addon onclick" onclick="get_rizhi(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+lastpage+')"><i class="fa fa-chevron-left"></i></div><select id="blogid" class="form-control" onchange="set_rizhi(\''+id+'\');">'+addstr+'</select><div class="input-group-addon onclick" onclick="get_rizhi(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+nextpage+')"><i class="fa fa-chevron-right"></i></div></div></div>');
+					if(km==1){
+						$('#km_inputsname').append('<div class="form-group" id="show_rizhi"><div class="input-group"><div class="input-group-addon onclick" onclick="get_rizhi(\''+id+'\',$(\'#km_inputvalue\').val(),'+km+','+lastpage+')"><i class="layui-icon layui-icon-prev"></i></div><select id="blogid" class="form-control" onchange="set_rizhi(\''+id+'\');">'+addstr+'</select><div class="input-group-addon onclick" onclick="get_rizhi(\''+id+'\',$(\'#km_inputvalue\').val(),'+km+','+nextpage+')"><i class="layui-icon layui-icon-next"></i></div></div></div>');
+					}else{
+						$('#inputsname').append('<div class="form-group" id="show_rizhi"><div class="input-group"><div class="input-group-addon onclick" onclick="get_rizhi(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+lastpage+')"><i class="layui-icon layui-icon-prev"></i></div><select id="blogid" class="form-control" onchange="set_rizhi(\''+id+'\');">'+addstr+'</select><div class="input-group-addon onclick" onclick="get_rizhi(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+nextpage+')"><i class="layui-icon layui-icon-next"></i></div></div></div>');
+					}
 				}
 				set_rizhi(id);
 			}else{
@@ -413,7 +460,7 @@ function queryOrder(type,content,page){
 				if(data.islast==true) addstr += '<button class="btn btn-primary btn-xs pull-left" onclick="queryOrder(\''+data.type+'\',\''+data.content+'\','+(data.page-1)+')">上一页</button>';
 				if(data.isnext==true) addstr += '<button class="btn btn-primary btn-xs pull-right" onclick="queryOrder(\''+data.type+'\',\''+data.content+'\','+(data.page+1)+')">下一页</button>';
 				$('#list').append('<tr><td colspan=6>'+addstr+'</td></tr>');
-				if($(window).width() > 768 && typeof querymode === "undefined"){
+				if($(window).width() > 768){
 					if($('#list2').length>0){
 						$('#list2').html($('#list').html());
 					}else{
@@ -599,16 +646,6 @@ var handlerEmbed3 = function (vaptchaObj) {
 		});
 	});
 };
-function toTool(cid,tid){
-	history.replaceState({}, null, './?cid='+cid+'&tid='+tid);
-	$("#recommend").modal('hide');
-	$_GET['tid']=tid;
-	$_GET["cid"]=cid;
-	$("#cid").val(cid);
-	$("#cid").change();
-	$("#goodType").hide('normal');
-	$("#goodTypeContent").show('normal');
-}
 function dopay(type,orderid){
 	if(type == 'rmb'){
 		var ii = layer.msg('正在提交订单请稍候...', {icon: 16,shade: 0.5,time: 15000});
@@ -751,9 +788,6 @@ function checklogin(islogin){
 		return false;
 	}
 }
-function openCart(){
-	window.location.href='./?mod=cart';
-}
 var audio_init = {
 	changeClass: function (target,id) {
        	var className = $(target).attr('class');
@@ -770,20 +804,6 @@ var audio_init = {
 	}
 }
 $(document).ready(function(){
-$('.goodTypeChange').click(function(){
-	var id = $(this).data('id');
-	var img = $(this).data('img');
-	history.replaceState({}, null, './?cid='+id);
-	$("#cid").val(id);
-	$("#cid").change();
-	$("#goodType").hide('normal');
-	$("#goodTypeContent").show('normal');
-});
-$(".nav-tabs,.backType").click(function(){
-	history.replaceState({}, null, './');
-	$("#goodType").show('normal');
-	$("#goodTypeContent").hide('normal');
-})
 $("#showSearchBar").click(function () {
 	$("#display_selectclass").slideToggle();
 	$("#display_searchBar").slideToggle();
@@ -794,10 +814,10 @@ $("#closeSearchBar").click(function () {
 });
 $("#doSearch").click(function () {
 	var kw = $("#searchkw").val();
-	if(kw==''){layer.msg('请先输入要搜索的内容', {time: 500});return;}
+	if(kw==''){$("#closeSearchBar").click();return;}
 	var ii = layer.load(2, {shade:[0.1,'#fff']});
-	$("#tid").empty();
-	$("#tid").append('<option value="0">请选择商品</option>');
+	$("#shoplist").empty();
+	$("#shoplist").append('<option value="0">请选择商品</option>');
 	$.ajax({
 		type : "POST",
 		url : "ajax.php?act=gettool",
@@ -808,13 +828,12 @@ $("#doSearch").click(function () {
 			if(data.code == 0){
 				var num = 0;
 				$.each(data.data, function (i, res) {
-					$("#tid").append('<option value="'+res.tid+'" cid="'+res.cid+'" price="'+res.price+'" desc="'+escape(res.desc)+'" alert="'+escape(res.alert)+'" inputname="'+res.input+'" inputsname="'+res.inputs+'" multi="'+res.multi+'" isfaka="'+res.isfaka+'" count="'+res.value+'" close="'+res.close+'" prices="'+res.prices+'" max="'+res.max+'" min="'+res.min+'" stock="'+res.stock+'">'+res.name+'</option>');
+					$("#shoplist").append('<div class="col-xs-6 col-sm-3 col-md-3 layui-anim layui-anim-scaleSpring" data-anim="layui-anim-upbit"><a href="javascript:void(0)" id="'+res.tid+'" onclick="getshop('+res.tid+',\''+cid+'\',\''+res.name+'\',\''+res.price+'\',\''+res.input+'\',\''+res.inputs+'\',\''+res.multi+'\',\''+res.isfaka+'\',\''+res.value+'\',\''+escape(res.desc)+'\',\''+escape(res.alert)+'\',\''+res.shopimg+'\',\''+res.close+'\',\''+res.prices+'\',\''+res.max+'\',\''+res.min+'\',\''+res.stock+'\');" value="'+res.tid+'"><div class="thumbnail" style="height:240px;"><center style="margin-top:5%;"><img src="'+res.shopimg+'" width="80" height="100" style="border-radius: 15px" onerror="this.src=\'assets/img/Product/noimg.png\'"><hr class="layui-bg-blue" style="width:100%">'+res.name+'<hr class="layui-bg-red" style="width:100%">[￥'+res.price+']<br>'+(res.close==1?'<span class="layui-badge layui-bg-yellow">停止下单</span>':'<span class="layui-badge layui-bg-blue">立即购买</span>')+'</center></div></a></div>');
 					num++;
 				});
-				$("#tid").val(0);
-				getPoint();
-				if(num==0 && cid!=0)layer.msg('<option value="0">没有搜索到相关商品</option>', {icon: 2, time: 500});
-				else layer.msg('成功搜索到'+num+'个商品', {icon: 1, time: 1000});
+				$("#shoplist").val(0);
+				/*getPoint();*/
+				if(num==0 && cid!=0)layer.msg('没有搜索到该商品');
 			}else{
 				layer.alert(data.msg);
 			}
@@ -828,35 +847,35 @@ $("#doSearch").click(function () {
 $("#cid").change(function () {
 	var cid = $(this).val();
 	if(cid>0)history.replaceState({}, null, './?cid='+cid);
-	var ii = layer.load(2, {shade:[0.1,'#fff']});
-	$("#tid").empty();
-	$("#tid").append('<option value="0">请选择商品</option>');
+	var ii = layer.load(0, {shade:[0.1,'#fff']});
+	$("#shoplist").empty();
+	$("#shoplist").append('');
 	$.ajax({
 		type : "GET",
-		url : "ajax.php?act=gettool&cid="+cid+"&info=1",
+		url : "ajax.php?act=gettool&cid="+cid,
 		dataType : 'json',
 		success : function(data) {
 			layer.close(ii);
-			$("#tid").empty();
-			$("#tid").append('<option value="0">请选择商品</option>');
 			if(data.code == 0){
-				if(data.info!=null){
-					$("#className").html(data.info.name);
-					$("#classImg").attr('src',data.info.shopimg);
-				}
 				var num = 0;
 				$.each(data.data, function (i, res) {
-					$("#tid").append('<option value="'+res.tid+'" cid="'+res.cid+'" price="'+res.price+'" desc="'+escape(res.desc)+'" alert="'+escape(res.alert)+'" inputname="'+res.input+'" inputsname="'+res.inputs+'" multi="'+res.multi+'" isfaka="'+res.isfaka+'" count="'+res.value+'" close="'+res.close+'" prices="'+res.prices+'" max="'+res.max+'" min="'+res.min+'" stock="'+res.stock+'">'+res.name+'</option>');
+					if(res.price==0){
+						price='免费';
+					}else{
+						price=res.price;
+					}
+					$("#shoplist").append('<div class="col-xs-6 col-sm-3 col-md-3 layui-anim layui-anim-scaleSpring" data-anim="layui-anim-upbit"><a href="javascript:void(0)" id="tools'+res.tid+'" onclick="getshop('+res.tid+',\''+cid+'\',\''+res.name+'\',\''+res.price+'\',\''+res.input+'\',\''+res.inputs+'\',\''+res.multi+'\',\''+res.isfaka+'\',\''+res.value+'\',\''+escape(res.desc)+'\',\''+escape(res.alert)+'\',\''+res.shopimg+'\',\''+res.close+'\',\''+res.prices+'\',\''+res.max+'\',\''+res.min+'\',\''+res.stock+'\');"><div class="thumbnail" style="height:240px;"><center style="margin-top:5%;"><img src="'+res.shopimg+'" width="80" height="100" style="border-radius: 15px" onerror="this.src=\'assets/img/Product/noimg.png\'"><hr class="layui-bg-blue" style="width:100%">'+generate(res.name)+'<hr class="layui-bg-red" style="width:100%">[￥'+price+']<br>'+(res.close==1?'<span class="layui-badge layui-bg-yellow">停止下单</span>':'<span class="layui-badge layui-bg-blue">立即购买</span>')+'</center></div></a></div>');
 					num++;
 				});
 				if($_GET["tid"] && $_GET["cid"]==cid){
-					var tid = parseInt($_GET["tid"]);
-					$("#tid").val(tid);
+					var shoptid = parseInt($_GET["tid"]);
+					$("#shoplist").val(shoptid);
+					$("#tools"+shoptid).click();
 				}else{
-					$("#tid").val(0);
+					$("#shoplist").val(0);
 				}
-				getPoint();
-				if(num==0 && cid!=0)$("#tid").html('<option value="0">该分类下没有商品</option>');
+				/*getPoint();*/
+				if(num==0 && cid!=0)layer.msg('该分类下没有商品');
 			}else{
 				layer.alert(data.msg);
 			}
@@ -892,7 +911,7 @@ $("#cid").change(function () {
 		$.ajax({
 			type : "POST",
 			url : "ajax.php?act=pay",
-			data : {tid:tid,inputvalue:$("#inputvalue").val(),inputvalue2:$("#inputvalue2").val(),inputvalue3:$("#inputvalue3").val(),inputvalue4:$("#inputvalue4").val(),inputvalue5:$("#inputvalue5").val(),num:$("#num").val(),hashsalt:hashsalt},
+			data : {tid:tid,inputvalue:inputvalue,inputvalue2:$("#inputvalue2").val(),inputvalue3:$("#inputvalue3").val(),inputvalue4:$("#inputvalue4").val(),inputvalue5:$("#inputvalue5").val(),num:$("#num").val(),hashsalt:hashsalt},
 			dataType : 'json',
 			success : function(data) {
 				layer.close(ii);
@@ -902,19 +921,19 @@ $("#cid").change(function () {
 					}
 					var paymsg = '';
 					if(data.pay_alipay>0){
-						paymsg+='<button class="btn btn-default btn-block" onclick="dopay(\'alipay\',\''+data.trade_no+'\')" style="margin-top:10px;"><img src="assets/img/alipay.png" class="logo">支付宝</button>';
+						paymsg+='<button class="layui-btn layui-btn-primary layui-btn-fluid" onclick="dopay(\'alipay\',\''+data.trade_no+'\')" style="margin-top:10px;"><img src="assets/img/alipay.png" class="paylogo">支付宝</button><br/>';
 					}
 					if(data.pay_qqpay>0){
-						paymsg+='<button class="btn btn-default btn-block" onclick="dopay(\'qqpay\',\''+data.trade_no+'\')" style="margin-top:10px;"><img src="assets/img/qqpay.png" class="logo">QQ钱包</button>';
+						paymsg+='<button class="layui-btn layui-btn-primary layui-btn-fluid" onclick="dopay(\'qqpay\',\''+data.trade_no+'\')" style="margin-top:10px;"><img src="assets/img/qqpay.png" class="paylogo">QQ钱包</button><br/>';
 					}
 					if(data.pay_wxpay>0){
-						paymsg+='<button class="btn btn-default btn-block" onclick="dopay(\'wxpay\',\''+data.trade_no+'\')" style="margin-top:10px;"><img src="assets/img/wxpay.png" class="logo">微信支付</button>';
+						paymsg+='<button class="layui-btn layui-btn-primary layui-btn-fluid" onclick="dopay(\'wxpay\',\''+data.trade_no+'\')" style="margin-top:10px;"><img src="assets/img/wxpay.png" class="paylogo">微信支付</button><br/>';
 					}
 					if (data.pay_rmb>0) {
-						paymsg+='<button class="btn btn-default btn-block" onclick="dopay(\'rmb\',\''+data.trade_no+'\')" style="margin-top:10px;"><img src="assets/img/rmb.png" class="logo">余额支付<span class="text-muted">（剩'+data.user_rmb+'元）</span></button>';
+						paymsg+='<button class="layui-btn layui-btn-primary layui-btn-fluid" style="margin-top:10px;" onclick="dopay(\'rmb\',\''+data.trade_no+'\')" style="margin-top:10px;"><img src="assets/img/rmb.png" class="paylogo">余额支付<span class="text-muted">（剩'+data.user_rmb+'元）</span></button>';
 					}
 					if(data.paymsg!=null)paymsg+=data.paymsg;
-					layer.alert('<center><h2>￥ '+data.need+'</h2><hr>'+paymsg+'<hr><a class="btn btn-default btn-block" onclick="cancel(\''+data.trade_no+'\')">取消订单</a></center>',{
+					layer.alert('<center><h2>￥ '+data.need+'</h2><hr>'+paymsg+'<hr><a class="layui-btn layui-btn-primary layui-btn-fluid" onclick="cancel(\''+data.trade_no+'\')">取消订单</a></center>',{
 						btn:[],
 						title:'提交订单成功',
 						closeBtn: false
@@ -1081,6 +1100,27 @@ $("#cid").change(function () {
 		var type=$("#searchtype").val();
 		queryOrder(type,qq,1);
 	});
+$("#buy_alipay").click(function(){
+	var orderid=$("#orderid").val();
+	window.location.href='other/submit.php?type=alipay&orderid='+orderid;
+});
+$("#buy_qqpay").click(function(){
+	var orderid=$("#orderid").val();
+	window.location.href='other/submit.php?type=qqpay&orderid='+orderid;
+});
+$("#buy_wxpay").click(function(){
+	var orderid=$("#orderid").val();
+	window.location.href='other/submit.php?type=wxpay&orderid='+orderid;
+});
+$("#buy_tenpay").click(function(){
+	var orderid=$("#orderid").val();
+	window.location.href='other/submit.php?type=tenpay&orderid='+orderid;
+});
+$("#buy_shop").click(function(){
+	var orderid=$("#orderid").val();
+	window.location.href='shop.php?act=submit&orderid='+orderid;
+});
+
 $("#num_add").click(function () {
 	var i = parseInt($("#num").val());
 	if ($("#need").val() == ''){
@@ -1252,6 +1292,7 @@ if($_GET['gift']){
 if($_GET['cid']){
 	var cid = parseInt($_GET['cid']);
 	$("#cid").val(cid);
+	isModal=false;
 }
 $("#cid").change();
 
@@ -1279,6 +1320,84 @@ $.cookie("counter", visits, 24*60*60*30);
 if($('#audio-play').is(':visible')){
 	audio_init.play();
 }
-
 });
-
+function MakeHex(x) {
+	if((x >= 0) && (x <= 9)){
+		return x;
+	}else{
+		switch(x) {
+		case 10: return "A"; 
+		case 11: return "B";  
+		case 12: return "C";  
+		case 13: return "D";  
+		case 14: return "E";  
+		case 15: return "F";  
+		  }
+	}
+}
+function MakeNum(str) {
+	if((str >= 0) && (str <= 9)){
+		return str;
+	}
+	switch(str.toUpperCase()) {
+	case "A": return 10;
+	case "B": return 11;
+	case "C": return 12;
+	case "D": return 13;
+	case "E": return 14;
+	case "F": return 15;
+	}
+}
+function HexToNum(hex) {
+	tens = MakeNum(hex.substring(0,1));
+	ones = 0;
+	ones=MakeNum(hex.substring(1,2));
+	num = (tens * 16) + (ones * 1);
+	return num;
+}
+function NumToHex(strNum) {
+	var base,rem,baseS,remS;
+	base = strNum / 16;
+	rem = strNum % 16;
+	base = base - (rem / 16);
+	baseS = MakeHex(base);
+	remS = MakeHex(rem);
+	hex = baseS + '' + remS;
+	return hex;
+}
+function generate(name){
+	scolor=('00000'+(Math.random()*0x1000000<<0).toString(16)).slice(-6);
+	ecolor=('00000'+(Math.random()*0x1000000<<0).toString(16)).slice(-6);
+	r1=HexToNum(scolor.substring(0,2));
+	g1=HexToNum(scolor.substring(2,4));
+	b1=HexToNum(scolor.substring(4,6));
+	r2=HexToNum(ecolor.substring(0,2));
+	g2=HexToNum(ecolor.substring(2,4));
+	b2=HexToNum(ecolor.substring(4,6));
+	r_step=(r1-r2-((r1-r2)%name.length))/name.length;
+	g_step=(g1-g2-((g1-g2)%name.length))/name.length;
+	b_step=(b1-b2-((b1-b2)%name.length))/name.length;
+	if(r_step==0){r_step=3;}
+	if(g_step==0){g_step=3;}
+	if(b_step==0){b_step=3;}
+	var str2='';
+	r_color=r1;
+	g_color=g1;
+	b_color=b1;
+	for(var i=0;i<name.length;i++){
+		cur_str=name.substring(i,i+1);
+		r_color=r_color-r_step;
+		g_color=g_color-g_step;
+		b_color=b_color-b_step;
+		if(r_color>=255||r_color<0){r_color=r1;}
+		if(g_color>=255||g_color<0){g_color=g1;}
+		if(b_color>=255||b_color<0){b_color=b1;}
+		cur_color=NumToHex(r_color)+''+NumToHex(g_color)+''+NumToHex(b_color)
+		if(cur_str=='\n'){
+			str2+='<br>';
+		}else{
+			str2+='<font color=#' +cur_color+ '>' + cur_str + '</font>';
+		}
+	}
+	return str2;
+}

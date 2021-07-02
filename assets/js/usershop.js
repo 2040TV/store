@@ -13,38 +13,6 @@ var $_GET = (function(){
         return {};
     }
 })();
-function getcount() {
-	$.ajax({
-		type : "GET",
-		url : "ajax.php?act=getcount",
-		dataType : 'json',
-		async: true,
-		success : function(data) {
-			$('#count_yxts').html(data.yxts);
-			$('#count_orders').html(data.orders);
-			$('#count_orders1').html(data.orders1);
-			$('#count_orders2').html(data.orders2);
-			$('#count_orders_all').html(data.orders);
-			$('#count_orders_today').html(data.orders2);
-			$('#count_money').html(data.money);
-			$('#count_money1').html(data.money1);
-			$('#count_site').html(data.site);
-			if(data.gift != null){
-				$.each(data.gift, function(k, v) {
-					$('#pst_1').append('<li><strong>'+k+'</strong> 获得&nbsp;'+v+'</li>');
-				});
-				$('.giftlist').show();
-				$('.giftlist ul').css('height',(35*$('#pst_1 li').length)+'px');
-				scollgift();
-			}
-			if(data.cart_count != null && data.cart_count>0){
-				$('#cart_count').html(data.cart_count);
-				$('#alert_cart').slideDown();
-			}
-		}
-	});
-}
-var pwdlayer;
 function changepwd(id,skey) {
 	pwdlayer = layer.open({
 	  type: 1,
@@ -59,7 +27,7 @@ function saveOrderPwd(id,skey) {
 	var ii = layer.load(2, {shade:[0.1,'#fff']});
 	$.ajax({
 		type : "POST",
-		url : "ajax.php?act=changepwd",
+		url : "../ajax.php?act=changepwd",
 		data : {id:id,pwd:pwd,skey:skey},
 		dataType : 'json',
 		success : function(data) {
@@ -73,19 +41,6 @@ function saveOrderPwd(id,skey) {
 		} 
 	});
 }
-function scollgift(){
-  setInterval(function() {
-    var frist_li_idx = $("#pst_1 li:first");
-    var c_li = frist_li_idx.clone();
-    frist_li_idx.animate({
-      "marginTop": "-35px",
-      "opacity": "hide"
-    }, 600, function() {
-      $(this).remove();
-      $("#pst_1").append(c_li);
-    });
-  }, 2000);
-}
 function getPoint() {
 	if($('#tid option:selected').val()==undefined || $('#tid option:selected').val()=="0"){
 		$('#inputsname').html("");
@@ -96,7 +51,7 @@ function getPoint() {
 		$('#alert_frame').hide();
 		return false;
 	}
-	history.replaceState({}, null, './?cid='+$('#cid').val()+'&tid='+$('#tid option:selected').val());
+	history.replaceState({}, null, './shop.php?cid='+$('#cid').val()+'&tid='+$('#tid option:selected').val());
 	var multi = $('#tid option:selected').attr('multi');
 	var count = $('#tid option:selected').attr('count');
 	var price = $('#tid option:selected').attr('price');
@@ -119,7 +74,7 @@ function getPoint() {
 		$('#submit_buy').val('立即购买');
 		$('#submit_buy').html('立即购买');
 	}
-	if(multi == 1 && price != 0){
+	if(multi == 1){
 		$('#display_num').show();
 	}else{
 		$('#display_num').hide();
@@ -204,7 +159,7 @@ function getPoint() {
 		$('#display_left').show();
 		$.ajax({
 			type : "POST",
-			url : "ajax.php?act=getleftcount",
+			url : "../ajax.php?act=getleftcount",
 			data : {tid:$('#tid option:selected').val()},
 			dataType : 'json',
 			success : function(data) {
@@ -237,7 +192,7 @@ function get_shuoshuo(id,uin,km,page){
 	var ii = layer.load(2, {shade:[0.1,'#fff']});
 	$.ajax({
 		type : "GET",
-		url : "ajax.php?act=getshuoshuo&uin="+uin+"&page="+page+"&hashsalt="+hashsalt,
+		url : "../ajax.php?act=getshuoshuo&uin="+uin+"&page="+page+"&hashsalt="+hashsalt,
 		dataType : 'json',
 		success : function(data) {
 			layer.close(ii);
@@ -249,9 +204,17 @@ function get_shuoshuo(id,uin,km,page){
 				var nextpage = page+1;
 				var lastpage = page>1?page-1:1;
 				if($('#show_shuoshuo').length > 0){
-					$('#show_shuoshuo').html('<div class="input-group"><div class="input-group-addon onclick" title="上一页" onclick="get_shuoshuo(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+lastpage+')"><i class="fa fa-chevron-left"></i></div><select id="shuoid" class="form-control" onchange="set_shuoshuo(\''+id+'\');">'+addstr+'</select><div class="input-group-addon onclick" title="下一页" onclick="get_shuoshuo(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+nextpage+')"><i class="fa fa-chevron-right"></i></div></div>');
+					if(km==1){
+						$('#show_shuoshuo').html('<div class="input-group"><div class="input-group-addon onclick" title="上一页" onclick="get_shuoshuo(\''+id+'\',$(\'#km_inputvalue\').val(),'+km+','+lastpage+')"><i class="fa fa-chevron-left"></i></div><select id="shuoid" class="form-control" onchange="set_shuoshuo(\''+id+'\');">'+addstr+'</select><div class="input-group-addon onclick" title="下一页" onclick="get_shuoshuo(\''+id+'\',$(\'#km_inputvalue\').val(),'+km+','+nextpage+')"><i class="fa fa-chevron-right"></i></div></div>');
+					}else{
+						$('#show_shuoshuo').html('<div class="input-group"><div class="input-group-addon onclick" title="上一页" onclick="get_shuoshuo(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+lastpage+')"><i class="fa fa-chevron-left"></i></div><select id="shuoid" class="form-control" onchange="set_shuoshuo(\''+id+'\');">'+addstr+'</select><div class="input-group-addon onclick" title="下一页" onclick="get_shuoshuo(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+nextpage+')"><i class="fa fa-chevron-right"></i></div></div>');
+					}
 				}else{
-					$('#inputsname').append('<div class="form-group" id="show_shuoshuo"><div class="input-group"><div class="input-group-addon onclick" title="上一页" onclick="get_shuoshuo(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+lastpage+')"><i class="fa fa-chevron-left"></i></div><select id="shuoid" class="form-control" onchange="set_shuoshuo(\''+id+'\');">'+addstr+'</select><div class="input-group-addon onclick" title="下一页" onclick="get_shuoshuo(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+nextpage+')"><i class="fa fa-chevron-right"></i></div></div></div>');
+					if(km==1){
+						$('#km_inputsname').append('<div class="form-group" id="show_shuoshuo"><div class="input-group"><div class="input-group-addon onclick" title="上一页" onclick="get_shuoshuo(\''+id+'\',$(\'#km_inputvalue\').val(),'+km+','+lastpage+')"><i class="fa fa-chevron-left"></i></div><select id="shuoid" class="form-control" onchange="set_shuoshuo(\''+id+'\');">'+addstr+'</select><div class="input-group-addon onclick" title="下一页" onclick="get_shuoshuo(\''+id+'\',$(\'#km_inputvalue\').val(),'+km+','+nextpage+')"><i class="fa fa-chevron-right"></i></div></div></div>');
+					}else{
+						$('#inputsname').append('<div class="form-group" id="show_shuoshuo"><div class="input-group"><div class="input-group-addon onclick" title="上一页" onclick="get_shuoshuo(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+lastpage+')"><i class="fa fa-chevron-left"></i></div><select id="shuoid" class="form-control" onchange="set_shuoshuo(\''+id+'\');">'+addstr+'</select><div class="input-group-addon onclick" title="下一页" onclick="get_shuoshuo(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+nextpage+')"><i class="fa fa-chevron-right"></i></div></div></div>');
+					}
 				}
 				set_shuoshuo(id);
 			}else{
@@ -273,7 +236,7 @@ function get_rizhi(id,uin,km,page){
 	var ii = layer.load(2, {shade:[0.1,'#fff']});
 	$.ajax({
 		type : "GET",
-		url : "ajax.php?act=getrizhi&uin="+uin+"&page="+page+"&hashsalt="+hashsalt,
+		url : "../ajax.php?act=getrizhi&uin="+uin+"&page="+page+"&hashsalt="+hashsalt,
 		dataType : 'json',
 		success : function(data) {
 			layer.close(ii);
@@ -287,7 +250,11 @@ function get_rizhi(id,uin,km,page){
 				if($('#show_rizhi').length > 0){
 					$('#show_rizhi').html('<div class="input-group"><div class="input-group-addon onclick" onclick="get_rizhi(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+lastpage+')"><i class="fa fa-chevron-left"></i></div><select id="blogid" class="form-control" onchange="set_rizhi(\''+id+'\');">'+addstr+'</select><div class="input-group-addon onclick" onclick="get_rizhi(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+nextpage+')"><i class="fa fa-chevron-right"></i></div></div>');
 				}else{
-					$('#inputsname').append('<div class="form-group" id="show_rizhi"><div class="input-group"><div class="input-group-addon onclick" onclick="get_rizhi(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+lastpage+')"><i class="fa fa-chevron-left"></i></div><select id="blogid" class="form-control" onchange="set_rizhi(\''+id+'\');">'+addstr+'</select><div class="input-group-addon onclick" onclick="get_rizhi(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+nextpage+')"><i class="fa fa-chevron-right"></i></div></div></div>');
+					if(km==1){
+						$('#km_inputsname').append('<div class="form-group" id="show_rizhi"><div class="input-group"><div class="input-group-addon onclick" onclick="get_rizhi(\''+id+'\',$(\'#km_inputvalue\').val(),'+km+','+lastpage+')"><i class="fa fa-chevron-left"></i></div><select id="blogid" class="form-control" onchange="set_rizhi(\''+id+'\');">'+addstr+'</select><div class="input-group-addon onclick" onclick="get_rizhi(\''+id+'\',$(\'#km_inputvalue\').val(),'+km+','+nextpage+')"><i class="fa fa-chevron-right"></i></div></div></div>');
+					}else{
+						$('#inputsname').append('<div class="form-group" id="show_rizhi"><div class="input-group"><div class="input-group-addon onclick" onclick="get_rizhi(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+lastpage+')"><i class="fa fa-chevron-left"></i></div><select id="blogid" class="form-control" onchange="set_rizhi(\''+id+'\');">'+addstr+'</select><div class="input-group-addon onclick" onclick="get_rizhi(\''+id+'\',$(\'#inputvalue\').val(),'+km+','+nextpage+')"><i class="fa fa-chevron-right"></i></div></div></div>');
+					}
 				}
 				set_rizhi(id);
 			}else{
@@ -304,7 +271,7 @@ function fillOrder(id,skey){
 	if(!confirm('是否确定补交订单？'))return;
 	$.ajax({
 		type : "POST",
-		url : "ajax.php?act=fill",
+		url : "../ajax.php?act=fill",
 		data : {orderid:id,skey:skey},
 		dataType : 'json',
 		success : function(data) {
@@ -356,7 +323,7 @@ function getshareid(){
 		var ii = layer.load(2, {shade:[0.1,'#fff']});
 		$.ajax({
 			type : "POST",
-			url : "ajax.php?act=getshareid",
+			url : "../ajax.php?act=getshareid",
 			data : {url:songurl, hashsalt:hashsalt},
 			dataType : 'json',
 			success : function(data) {
@@ -385,7 +352,7 @@ function queryOrder(type,content,page){
 	$('#list').html('');
 	$.ajax({
 		type : "POST",
-		url : "ajax.php?act=query",
+		url : "../ajax.php?act=query",
 		data : {type:type, qq:content, page:page},
 		dataType : 'json',
 		success : function(data) {
@@ -413,7 +380,7 @@ function queryOrder(type,content,page){
 				if(data.islast==true) addstr += '<button class="btn btn-primary btn-xs pull-left" onclick="queryOrder(\''+data.type+'\',\''+data.content+'\','+(data.page-1)+')">上一页</button>';
 				if(data.isnext==true) addstr += '<button class="btn btn-primary btn-xs pull-right" onclick="queryOrder(\''+data.type+'\',\''+data.content+'\','+(data.page+1)+')">下一页</button>';
 				$('#list').append('<tr><td colspan=6>'+addstr+'</td></tr>');
-				if($(window).width() > 768 && typeof querymode === "undefined"){
+				if($(window).width() > 768){
 					if($('#list2').length>0){
 						$('#list2').html($('#list').html());
 					}else{
@@ -424,7 +391,7 @@ function queryOrder(type,content,page){
 					  zIndex: 90,
 					  area: [";max-width:90%;min-width:800px",";max-height:100%"],
 					  title: '查询订单',
-					  skin: 'layui-layer-rim',
+					  skin: 'layui-layer-molv',
 					  content: '<div class="table-responsive"><table class="table table-vcenter table-condensed table-striped"><thead><tr><th>下单账号</th><th>商品名称</th><th>数量</th><th class="hidden-xs">购买时间</th><th>状态</th><th>操作</th></tr></thead><tbody id="list2">'+$('#list').html()+'</tbody></table></div>'
 					});
 					}
@@ -446,7 +413,7 @@ function showOrder(id,skey){
 	var status = ['<span class="label label-primary">待处理</span>','<span class="label label-success">已完成</span>','<span class="label label-warning">处理中</span>','<span class="label label-danger">异常</span>','<font color=red>已退款</font>'];
 	$.ajax({
 		type : "POST",
-		url : "ajax.php?act=order",
+		url : "../ajax.php?act=order",
 		data : {id:id,skey:skey},
 		dataType : 'json',
 		success : function(data) {
@@ -455,7 +422,7 @@ function showOrder(id,skey){
 				var item = '<table class="table table-condensed table-hover" id="orderItem">';
 				item += '<tr><td colspan="6" style="text-align:center" class="orderTitle"><b>订单基本信息</b></td></tr><tr><td class="info orderTitle">订单编号</td><td colspan="5" class="orderContent">'+id+'</td></tr><tr><td class="info orderTitle">商品名称</td><td colspan="5" class="orderContent">'+data.name+'</td></tr><tr><td class="info orderTitle">订单金额</td><td colspan="5" class="orderContent">'+data.money+'元</td></tr><tr><td class="info orderTitle">购买时间</td><td colspan="5">'+data.date+'</td></tr><tr><td class="info orderTitle">下单信息</td><td colspan="5" class="orderContent">'+data.inputs+'</td><tr><td class="info orderTitle">订单状态</td><td colspan="5" class="orderContent">'+status[data.status]+'</td></tr>';
 				if(data.complain){
-					item += '<tr><td class="info orderTitle">订单操作</td><td class="orderContent"><a href="./user/workorder.php?my=add&orderid='+id+'&skey='+skey+'" target="_blank" onclick="return checklogin('+data.islogin+')" class="btn btn-xs btn-default">投诉订单</a>';
+					item += '<tr><td class="info orderTitle">订单操作</td><td class="orderContent"><a href="./workorder.php?my=add&orderid='+id+'&skey='+skey+'" target="_blank" onclick="return checklogin('+data.islogin+')" class="btn btn-xs btn-default">投诉订单</a>';
 					if(data.selfrefund == 1 && data.islogin == 1 && (data.status == 0 || data.status == 3)){
 						item += '&nbsp;<a onclick="return apply_refund('+id+',\''+skey+'\')" class="btn btn-xs btn-danger">申请退款</a>';
 					}
@@ -504,7 +471,7 @@ function apply_refund(id,skey){
 		var ii = layer.load(2, {shade:[0.1,'#fff']});
 		$.ajax({
 			type : "POST",
-			url : "ajax.php?act=apply_refund",
+			url : "../ajax.php?act=apply_refund",
 			data : {id:id,skey:skey},
 			dataType : 'json',
 			success : function(data) {
@@ -532,7 +499,7 @@ var handlerEmbed = function (captchaObj) {
 		var ii = layer.load(2, {shade:[0.1,'#fff']});
 		$.ajax({
 			type : "POST",
-			url : "ajax.php?act=pay",
+			url : "../ajax.php?act=pay",
 			data : {tid:$("#tid").val(),inputvalue:$("#inputvalue").val(),inputvalue2:$("#inputvalue2").val(),inputvalue3:$("#inputvalue3").val(),inputvalue4:$("#inputvalue4").val(),inputvalue5:$("#inputvalue5").val(),num:$("#num").val(),hashsalt:hashsalt,geetest_challenge:result.geetest_challenge,geetest_validate:result.geetest_validate,geetest_seccode:result.geetest_seccode},
 			dataType : 'json',
 			success : function(data) {
@@ -556,7 +523,7 @@ var handlerEmbed2 = function (token) {
 	var ii = layer.load(2, {shade:[0.1,'#fff']});
 	$.ajax({
 		type : "POST",
-		url : "ajax.php?act=pay",
+		url : "../ajax.php?act=pay",
 		data : {tid:$("#tid").val(),inputvalue:$("#inputvalue").val(),inputvalue2:$("#inputvalue2").val(),inputvalue3:$("#inputvalue3").val(),inputvalue4:$("#inputvalue4").val(),inputvalue5:$("#inputvalue5").val(),num:$("#num").val(),hashsalt:hashsalt,token:token},
 		dataType : 'json',
 		success : function(data) {
@@ -582,7 +549,7 @@ var handlerEmbed3 = function (vaptchaObj) {
 		var ii = layer.load(2, {shade:[0.1,'#fff']});
 		$.ajax({
 			type : "POST",
-			url : "ajax.php?act=pay",
+			url : "../ajax.php?act=pay",
 			data : {tid:$("#tid").val(),inputvalue:$("#inputvalue").val(),inputvalue2:$("#inputvalue2").val(),inputvalue3:$("#inputvalue3").val(),inputvalue4:$("#inputvalue4").val(),inputvalue5:$("#inputvalue5").val(),num:$("#num").val(),hashsalt:hashsalt,token:token},
 			dataType : 'json',
 			success : function(data) {
@@ -600,7 +567,7 @@ var handlerEmbed3 = function (vaptchaObj) {
 	});
 };
 function toTool(cid,tid){
-	history.replaceState({}, null, './?cid='+cid+'&tid='+tid);
+	history.replaceState({}, null, './shop.php?cid='+cid+'&tid='+tid);
 	$("#recommend").modal('hide');
 	$_GET['tid']=tid;
 	$_GET["cid"]=cid;
@@ -614,7 +581,7 @@ function dopay(type,orderid){
 		var ii = layer.msg('正在提交订单请稍候...', {icon: 16,shade: 0.5,time: 15000});
 		$.ajax({
 			type : "POST",
-			url : "ajax.php?act=payrmb",
+			url : "../ajax.php?act=payrmb",
 			data : {orderid: orderid},
 			dataType : 'json',
 			success : function(data) {
@@ -629,17 +596,7 @@ function dopay(type,orderid){
 					var confirmobj = layer.confirm('你的余额不足，请充值！', {
 					  btn: ['立即充值','取消']
 					}, function(){
-						window.location.href='./user/recharge.php';
-					}, function(){
-						layer.close(confirmobj);
-					});
-				}else if(data.code == -4){
-					var confirmobj = layer.confirm('你还未登录，是否现在登录？', {
-					  btn: ['登录','注册','取消']
-					}, function(){
-						window.location.href='./user/login.php';
-					}, function(){
-						window.location.href='./user/reg.php';
+						window.location.href='./recharge.php';
 					}, function(){
 						layer.close(confirmobj);
 					});
@@ -649,14 +606,14 @@ function dopay(type,orderid){
 			} 
 		});
 	}else{
-		window.location.href='other/submit.php?type='+type+'&orderid='+orderid;
+		window.location.href='../other/submit.php?type='+type+'&orderid='+orderid;
 	}
 }
 function cancel(orderid){
 	layer.closeAll();
 	$.ajax({
 		type : "POST",
-		url : "ajax.php?act=cancel",
+		url : "../ajax.php?act=cancel",
 		data : {orderid: orderid, hashsalt: hashsalt},
 		dataType : 'json',
 		async : true,
@@ -735,52 +692,51 @@ function getCity(inputid,fid,i){
 	});
 	}
 }
-function checklogin(islogin){
-	if(islogin==1){
-		return true;
-	}else{
-		var confirmobj = layer.confirm('为方便反馈处理结果，投诉订单前请先登录网站！', {
-		  btn: ['登录','注册','取消']
-		}, function(){
-			window.location.href='./user/login.php';
-		}, function(){
-			window.location.href='./user/reg.php';
-		}, function(){
-			layer.close(confirmobj);
-		});
-		return false;
-	}
-}
 function openCart(){
-	window.location.href='./?mod=cart';
-}
-var audio_init = {
-	changeClass: function (target,id) {
-       	var className = $(target).attr('class');
-       	var ids = document.getElementById(id);
-       	(className == 'on')
-           	? $(target).removeClass('on').addClass('off')
-           	: $(target).removeClass('off').addClass('on');
-       	(className == 'on')
-           	? ids.pause()
-           	: ids.play();
-   	},
-	play:function(){
-		document.getElementById('media').play();
+	var area = [$(window).width() > 640 ? '640px' : '95%', $(window).height() > 600 ? '600px' : '90%'];
+	var options = {
+		type: 2,
+		title: '我的购物车',
+		shadeClose: true,
+		shade: false,
+		maxmin: true,
+		moveOut: true,
+		area: area,
+		content: '../?mod=cart',
+		zIndex: layer.zIndex,
+		success: function (layero, index) {
+			var that = this;
+			$(layero).data("callback", that.callback);
+			layer.setTop(layero);
+			if ($(layero).height() > $(window).height()) {
+				layer.style(index, {
+					top: 0,
+					height: $(window).height()
+				});
+			}
+		},
+		cancel: function(){
+			window.location.reload();
+		}
 	}
+	if ($(window).width() < 480 || (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream && top.$("body").size() > 0)) {
+		options.area = [top.$("body").width() + "px", top.$("body").height() + "px"];
+		options.offset = [top.$("body").scrollTop() + "px", "0px"];
+	}
+	layer.open(options);
 }
 $(document).ready(function(){
 $('.goodTypeChange').click(function(){
 	var id = $(this).data('id');
 	var img = $(this).data('img');
-	history.replaceState({}, null, './?cid='+id);
+	history.replaceState({}, null, './shop.php?cid='+id);
 	$("#cid").val(id);
 	$("#cid").change();
 	$("#goodType").hide('normal');
 	$("#goodTypeContent").show('normal');
 });
 $(".nav-tabs,.backType").click(function(){
-	history.replaceState({}, null, './');
+	history.replaceState({}, null, './shop.php');
 	$("#goodType").show('normal');
 	$("#goodTypeContent").hide('normal');
 })
@@ -800,7 +756,7 @@ $("#doSearch").click(function () {
 	$("#tid").append('<option value="0">请选择商品</option>');
 	$.ajax({
 		type : "POST",
-		url : "ajax.php?act=gettool",
+		url : "../ajax.php?act=gettool",
 		data : {kw:kw},
 		dataType : 'json',
 		success : function(data) {
@@ -827,13 +783,13 @@ $("#doSearch").click(function () {
 });
 $("#cid").change(function () {
 	var cid = $(this).val();
-	if(cid>0)history.replaceState({}, null, './?cid='+cid);
+	if(cid>0)history.replaceState({}, null, './shop.php?cid='+cid);
 	var ii = layer.load(2, {shade:[0.1,'#fff']});
 	$("#tid").empty();
 	$("#tid").append('<option value="0">请选择商品</option>');
 	$.ajax({
 		type : "GET",
-		url : "ajax.php?act=gettool&cid="+cid+"&info=1",
+		url : "../ajax.php?act=gettool&cid="+cid+"&info=1",
 		dataType : 'json',
 		success : function(data) {
 			layer.close(ii);
@@ -842,7 +798,10 @@ $("#cid").change(function () {
 			if(data.code == 0){
 				if(data.info!=null){
 					$("#className").html(data.info.name);
-					$("#classImg").attr('src',data.info.shopimg);
+					if(data.info.shopimg)
+						$("#classImg").attr('src',data.info.shopimg.indexOf("://")>0?data.info.shopimg:'../'+data.info.shopimg);
+					else
+						$("#classImg").attr('src','');
 				}
 				var num = 0;
 				$.each(data.data, function (i, res) {
@@ -891,7 +850,7 @@ $("#cid").change(function () {
 		var ii = layer.load(2, {shade:[0.1,'#fff']});
 		$.ajax({
 			type : "POST",
-			url : "ajax.php?act=pay",
+			url : "../ajax.php?act=pay",
 			data : {tid:tid,inputvalue:$("#inputvalue").val(),inputvalue2:$("#inputvalue2").val(),inputvalue3:$("#inputvalue3").val(),inputvalue4:$("#inputvalue4").val(),inputvalue5:$("#inputvalue5").val(),num:$("#num").val(),hashsalt:hashsalt},
 			dataType : 'json',
 			success : function(data) {
@@ -902,16 +861,16 @@ $("#cid").change(function () {
 					}
 					var paymsg = '';
 					if(data.pay_alipay>0){
-						paymsg+='<button class="btn btn-default btn-block" onclick="dopay(\'alipay\',\''+data.trade_no+'\')" style="margin-top:10px;"><img src="assets/img/alipay.png" class="logo">支付宝</button>';
+						paymsg+='<button class="btn btn-default btn-block" onclick="dopay(\'alipay\',\''+data.trade_no+'\')" style="margin-top:10px;"><img src="../assets/img/alipay.png" class="logo">支付宝</button>';
 					}
 					if(data.pay_qqpay>0){
-						paymsg+='<button class="btn btn-default btn-block" onclick="dopay(\'qqpay\',\''+data.trade_no+'\')" style="margin-top:10px;"><img src="assets/img/qqpay.png" class="logo">QQ钱包</button>';
+						paymsg+='<button class="btn btn-default btn-block" onclick="dopay(\'qqpay\',\''+data.trade_no+'\')" style="margin-top:10px;"><img src="../assets/img/qqpay.png" class="logo">QQ钱包</button>';
 					}
 					if(data.pay_wxpay>0){
-						paymsg+='<button class="btn btn-default btn-block" onclick="dopay(\'wxpay\',\''+data.trade_no+'\')" style="margin-top:10px;"><img src="assets/img/wxpay.png" class="logo">微信支付</button>';
+						paymsg+='<button class="btn btn-default btn-block" onclick="dopay(\'wxpay\',\''+data.trade_no+'\')" style="margin-top:10px;"><img src="../assets/img/wxpay.png" class="logo">微信支付</button>';
 					}
 					if (data.pay_rmb>0) {
-						paymsg+='<button class="btn btn-default btn-block" onclick="dopay(\'rmb\',\''+data.trade_no+'\')" style="margin-top:10px;"><img src="assets/img/rmb.png" class="logo">余额支付<span class="text-muted">（剩'+data.user_rmb+'元）</span></button>';
+						paymsg+='<button class="btn btn-default btn-block" onclick="dopay(\'rmb\',\''+data.trade_no+'\')" style="margin-top:10px;"><img src="../assets/img/rmb.png" class="logo">余额支付</button>';
 					}
 					if(data.paymsg!=null)paymsg+=data.paymsg;
 					layer.alert('<center><h2>￥ '+data.need+'</h2><hr>'+paymsg+'<hr><a class="btn btn-default btn-block" onclick="cancel(\''+data.trade_no+'\')">取消订单</a></center>',{
@@ -919,6 +878,7 @@ $("#cid").change(function () {
 						title:'提交订单成功',
 						closeBtn: false
 					});
+					$.cookie('user_order', data.trade_no, { path: '/' });
 				}else if(data.code == 1){
 					$('#alert_frame').hide();
 					if($('#inputname').html()=='你的邮箱'){
@@ -937,7 +897,7 @@ $("#cid").change(function () {
 						  success: function(){
 							$.getScript("//static.geetest.com/static/tools/gt.js", function() {
 								$.ajax({
-									url: "ajax.php?act=captcha&t=" + (new Date()).getTime(),
+									url: "../ajax.php?act=captcha&t=" + (new Date()).getTime(),
 									type: "get",
 									dataType: "json",
 									success: function (data) {
@@ -1002,16 +962,6 @@ $("#cid").change(function () {
 					}, function(){
 						window.location.reload();
 					});
-				}else if(data.code == 4){
-					var confirmobj = layer.confirm('请登录后再购买，是否现在登录？', {
-					  btn: ['登录','注册','取消']
-					}, function(){
-						window.location.href='./user/login.php';
-					}, function(){
-						window.location.href='./user/reg.php';
-					}, function(){
-						layer.close(confirmobj);
-					});
 				}else{
 					layer.alert(data.msg);
 				}
@@ -1042,7 +992,7 @@ $("#cid").change(function () {
 		var ii = layer.load(2, {shade:[0.1,'#fff']});
 		$.ajax({
 			type : "POST",
-			url : "ajax.php?act=pay&method=cart_add",
+			url : "../ajax.php?act=pay&method=cart_add",
 			data : {tid:tid,inputvalue:$("#inputvalue").val(),inputvalue2:$("#inputvalue2").val(),inputvalue3:$("#inputvalue3").val(),inputvalue4:$("#inputvalue4").val(),inputvalue5:$("#inputvalue5").val(),num:$("#num").val(),hashsalt:hashsalt},
 			dataType : 'json',
 			success : function(data) {
@@ -1060,16 +1010,6 @@ $("#cid").change(function () {
 					}, function(){
 						window.location.reload();
 					});
-				}else if(data.code == 4){
-					var confirmobj = layer.confirm('请登录后再购买，是否现在登录？', {
-					  btn: ['登录','注册','取消']
-					}, function(){
-						window.location.href='./user/login.php';
-					}, function(){
-						window.location.href='./user/reg.php';
-					}, function(){
-						layer.close(confirmobj);
-					});
 				}else{
 					layer.alert(data.msg);
 				}
@@ -1081,6 +1021,7 @@ $("#cid").change(function () {
 		var type=$("#searchtype").val();
 		queryOrder(type,qq,1);
 	});
+
 $("#num_add").click(function () {
 	var i = parseInt($("#num").val());
 	if ($("#need").val() == ''){
@@ -1162,81 +1103,7 @@ $("#num").keyup(function () {
 	else $('#need').val('￥'+price.toFixed(2) +"元");
 });
 
-var gogo; 
-$("#start").click(function(){
-	ii=layer.load(1,{shade:0.3});
-	$.ajax({
-		type:"GET",
-		url:"ajax.php?act=gift_start",
-		dataType:"json",
-		success:function(choujiang){
-			layer.close(ii);
-			if(choujiang.code == 0){
-				$("#start").css("display",'none');
-				$("#stop").css("display",'block');
-				var obj = eval(choujiang.data);
-                var len = obj.length;
-                gogo = setInterval(function(){
-                    var num = Math.floor(Math.random()*len);
-                    var id = obj[num]['tid'];
-                    var v = obj[num]['name'];
-                    $("#roll").html(v);
-                },100);
-			}else{
-				layer.alert(choujiang.msg);
-			}
-		}
-	});
-});
-$("#stop").click(function(){
-	ii=layer.load(1,{shade:0.3});
-	clearInterval(gogo);
-	$("#roll").html('正在抽奖中..');
-	var rand = Math.random(1);
-	$.ajax({
-		type:"GET",
-		url:"ajax.php?act=gift_start&action=ok&r=" + rand,
-		dataType:"json",
-		success:function(msg){
-			layer.close(ii);
-			if(msg.code==0){
-				$.ajax({
-					type:"POST",
-					url:"ajax.php?act=gift_stop&r=" + rand,
-					data:{hashsalt:hashsalt,token:msg.token},
-					dataType:"json",
-					success:function(data){
-						if(data.code == 0){
-							$("#roll").html('恭喜您抽到奖品：'+data.name);
-							$("#start").css("display",'block');
-							$("#stop").css("display",'none');
-							layer.alert('恭喜您抽到奖品：'+data.name+'，请填写中奖信息', {
-							  skin: 'layui-layer-lan'
-							  ,closeBtn: 0
-							}, function(){
-								window.location.href='?gift=1&cid='+data.cid+'&tid='+data.tid;
-							});
-						}else{
-							layer.alert(data.msg,{icon:2,shade:0.3});
-							$("#roll").html('点击下方按钮开始抽奖');
-							$("#start").css("display",'block');
-							$("#stop").css("display",'none');
-						}
-					}
-				});
-			}else{
-				layer.alert(msg.msg,{icon:2,shade:0.3});
-				$("#start").css("display",'block');
-				$("#stop").css("display",'none');
-			}
-		}
-	});
-});
 
-
-if(homepage == true){
-	getcount();
-}
 if($_GET['buyok']){
 	var orderid = $_GET['orderid'];
 	$("#tab-query").tab('show');
@@ -1246,39 +1113,12 @@ if($_GET['buyok']){
 	$("#tab-query").tab('show');
 	isModal=false;
 }
-if($_GET['gift']){
-	isModal=false;
-}
 if($_GET['cid']){
 	var cid = parseInt($_GET['cid']);
 	$("#cid").val(cid);
 }
 $("#cid").change();
 
-if($.cookie('sec_defend_time'))$.removeCookie('sec_defend_time', { path: '/' });
-if( !$.cookie('op') && isModal==true){
-	$('#myModal').modal({
-		keyboard: true
-	});
-	var cookietime = new Date(); 
-	cookietime.setTime(cookietime.getTime() + (60*60*1000));
-	$.cookie('op', false, { expires: cookietime });
-}
-var visits = $.cookie("counter")
-if(!visits)
-{
- visits=1;
-}
-else
-{
- visits=parseInt(visits)+1;
-}
-$('#counter').html(visits);
-$.cookie("counter", visits, 24*60*60*30);
-
-if($('#audio-play').is(':visible')){
-	audio_init.play();
-}
 
 });
 
