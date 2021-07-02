@@ -267,7 +267,7 @@ function get_goods(){
                                 }else{
                                     shuliang = '每份数量：'+item.value+'';
                                 }
-                                html += '<div style="line-height:0.7rem;height:0.7rem;color:#2EFEC8;font-size:0.6rem;margin-top: .2rem;">'+shuliang+'</div>';
+                                html += '<div style="line-height:0.7rem;height:0.7rem;color:#0000FF;font-size:0.6rem;margin-top: .2rem;">'+shuliang+'</div>';
                                 html += '<div style="line-height:0.7rem;height:0.7rem;color:#b2b2b2;font-size:0.6rem;margin-top: .2rem;">'+kucun+'</div>';
                                 if(item.price <=0){
                                     buy = '<div style="height: 1rem"><span class="buy" style="background-color: yellowgreen;color:#fff;display: inline-block;height: 1.1rem;line-height: 1rem;color: white;float: right;   padding: 0rem 0.35rem;width: 100%;border-radius: 0.1rem;   border: 1px solid transparent;text-align:center;">领取</span></div>';
